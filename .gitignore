@@ -1,0 +1,7 @@
+# Project exclude paths
+/FlinkTutorial/target/
+/HotItemsAnalysis/target/
+/LoginFailDetect/target/
+/MarketAnalysis/target/
+/NetworkFlowAnalysis/target/
+/OrderPayDetect/target/
