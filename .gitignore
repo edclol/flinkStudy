@@ -6,3 +6,4 @@
 /NetworkFlowAnalysis/target/
 /OrderPayDetect/target/
 *.iml
+.idea
