@@ -23,7 +23,8 @@ import java.util.Properties;
  */
 public class KafkaProducerUtil {
     public static void main(String[] args) throws Exception{
-        writeToKafka("sensor","/sensor.txt");
+        writeToKafka("json1","/json.txt");
+//        writeToKafka("sensor","/sensor.txt");
     }
 
     // 包装一个写入kafka的方法

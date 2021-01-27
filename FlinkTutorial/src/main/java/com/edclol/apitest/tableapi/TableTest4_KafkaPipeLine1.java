@@ -13,8 +13,10 @@ import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
 import org.apache.flink.table.descriptors.Csv;
+import org.apache.flink.table.descriptors.Json;
 import org.apache.flink.table.descriptors.Kafka;
 import org.apache.flink.table.descriptors.Schema;
+import org.apache.flink.types.Row;
 
 /**
  * @ClassName: TableTest4_KafkaPipeLine
@@ -22,7 +24,7 @@ import org.apache.flink.table.descriptors.Schema;
  * @Author: wushengran on 2020/11/13 14:01
  * @Version: 1.0
  */
-public class TableTest4_KafkaPipeLine {
+public class TableTest4_KafkaPipeLine1 {
     public static void main(String[] args) throws Exception {
         // 1. 创建环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -33,19 +35,23 @@ public class TableTest4_KafkaPipeLine {
         // 2. 连接Kafka，读取数据
         tableEnv.connect(new Kafka()
                 .version("0.11")
-                .topic("sensor")
+                .topic("json1")
                 .property("zookeeper.connect", "hadoop200:2181,hadoop201:2181,hadoop202:2181")
                 .property("bootstrap.servers", "hadoop200:9092,hadoop201:9092,hadoop202:9092")
+                .startFromEarliest()
+
         )
-                .withFormat(new Csv())
+                .withFormat(new Json())
                 .withSchema(new Schema()
-                        .field("id", DataTypes.STRING())
-                        .field("timestamp", DataTypes.BIGINT())
-                        .field("temp", DataTypes.DOUBLE())
+                        .field("data", DataTypes.STRING())
+                        .field("errCode", DataTypes.BIGINT())
+                        .field("author_id", DataTypes.STRING())
                 )
                 .createTemporaryTable("inputTable");
-
-        // 3. 查询转换
+        Table inputTable = tableEnv.from("inputTable");
+        inputTable.printSchema();
+        tableEnv.toAppendStream(inputTable, Row.class).print();
+      /*  // 3. 查询转换
         // 简单转换
         Table sensorTable = tableEnv.from("inputTable");
         Table resultTable = sensorTable.select("id, temp")
@@ -69,8 +75,9 @@ public class TableTest4_KafkaPipeLine {
                         .field("temp", DataTypes.DOUBLE())
                 )
                 .createTemporaryTable("outputTable");
+                resultTable.insertInto("outputTable");
+                */
 
-        resultTable.insertInto("outputTable");
 
         env.execute();
     }
